@@ -13,8 +13,8 @@ development:
 
 test:
   <<: *default
-  database: app_test
+  database: <%= ENV.fetch("DATABASE_NAME_TEST") {'app_test'} %>
 
 production:
   <<: *default
-  database: app_production
+  database: <%= ENV.fetch("DATABASE_NAME_PROD") {'app_production'} %
