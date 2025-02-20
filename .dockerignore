@@ -5,37 +5,37 @@
 /.gitignore
 
 # Ignore bundler config.
-/.bundle
+api/.bundle
 
 # Ignore all environment files.
 /.env*
 
 # Ignore all default key files.
-/config/master.key
-/config/credentials/*.key
+api/config/master.key
+api/config/credentials/*.key
 
 # Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
+api/log/*
+api/tmp/*
+!api/log/.keep
+!api/tmp/.keep
 
 # Ignore pidfiles, but keep the directory.
-/tmp/pids/*
-!/tmp/pids/.keep
+api/tmp/pids/*
+!api/tmp/pids/.keep
 
 # Ignore storage (uploaded files in development and any SQLite databases).
-/storage/*
-!/storage/.keep
-/tmp/storage/*
-!/tmp/storage/.keep
+api/storage/*
+!api/storage/.keep
+api/tmp/storage/*
+!api/tmp/storage/.keep
 
 # Ignore CI service files.
 /.github
 
 # Ignore Kamal files.
-/config/deploy*.yml
-/.kamal
+api/config/deploy*.yml
+api/.kamal
 
 # Ignore development files
 /.devcontainer

@@ -1,33 +1,33 @@
 # Rails log and temporary files
-log/*
-tmp/*
-!log/.keep
-!tmp/.keep
+api/log/*
+api/tmp/*
+!api/log/.keep
+!api/tmp/.keep
 
 # Ruby bundler and dependencies
-.bundle
+api/.bundle
 
 # SQLite database files (if applicable)
 db/*.sqlite3
 db/*.sqlite3-journal
 
 # Environment files and credentials
-.env
-.env.*
-config/master.key
+api/.env
+api/.env.*
+api/config/master.key
 
 # Process ID files
 *.pid
 *.pid.lock
 
 # Storage uploads (Rails Active Storage)
-storage/*
-!storage/.keep
+api/storage/*
+!api/storage/.keep
 
 # Compiled assets and packs (Rails/Webpacker)
-public/assets
-public/packs
-public/packs-test
+api/public/assets
+api/public/packs
+api/public/packs-test
 
 # Node and Yarn dependencies (for React)
 node_modules/
