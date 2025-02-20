@@ -1,0 +1,46 @@
+# Rails log and temporary files
+log/*
+tmp/*
+!log/.keep
+!tmp/.keep
+
+# Ruby bundler and dependencies
+.bundle
+
+# SQLite database files (if applicable)
+db/*.sqlite3
+db/*.sqlite3-journal
+
+# Environment files and credentials
+.env
+.env.*
+config/master.key
+
+# Process ID files
+*.pid
+*.pid.lock
+
+# Storage uploads (Rails Active Storage)
+storage/*
+!storage/.keep
+
+# Compiled assets and packs (Rails/Webpacker)
+public/assets
+public/packs
+public/packs-test
+
+# Node and Yarn dependencies (for React)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# React build directory
+build/
+
+# Vim temporary and backup files
+*.swp
+*.swo
+*~
+Session.vim
+.netrwhist
+.DS_Store
