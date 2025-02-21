@@ -1,18 +1,29 @@
 module Api
   class ProductsController < ApplicationController
-    def index
-      products = Product.all
-      products = products.where("name ILIKE ?", "%#{params[:name]}%") if params[:name].present?
-      products = products.where("price >= ?", params[:min_price]) if params[:min_price].present?
-      products = products.where("price <= ?", params[:max_price]) if params[:max_price].present?
+  def index
+    page = params.fetch(:page, 1).to_i
+    per_page = params.fetch(:per_page, 10).to_i
+    offset = (page - 1) * per_page
 
-      if params[:sort].present? && %w[name price expiration].include?(params[:sort])
-        order = params[:order] == "desc" ? :desc : :asc
-        products = products.order(params[:sort] => order)
-      end
+    products = Product.all
+    products = products.where("name ILIKE ?", "%#{params[:name]}%") if params[:name].present?
+    products = products.where("price >= ?", params[:min_price]) if params[:min_price].present?
+    products = products.where("price <= ?", params[:max_price]) if params[:max_price].present?
 
-      render json: products, status: :ok
+    if params[:sort].present? && %w[name price expiration].include?(params[:sort])
+      order = params[:order] == "desc" ? :desc : :asc
+      products = products.order(params[:sort] => order)
     end
+
+    paginated_products = products.offset(offset).limit(per_page)
+
+    render json: {
+      current_page: page,
+      per_page: per_page,
+      total_results: products.count,
+      products: paginated_products
+    }
+  end
 
     def show
       product = Product.find(params[:id])
