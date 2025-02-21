@@ -22,20 +22,16 @@ module Api
       if params[:file].present?
         file = params[:file]
 
-        # Define o diretório de upload persistente
         uploads_dir = Rails.root.join('tmp', 'uploads')
         FileUtils.mkdir_p(uploads_dir) unless Dir.exist?(uploads_dir)
 
-        # Gera um nome único para evitar colisões
         filename = "#{Time.now.to_i}_#{file.original_filename}"
         filepath = uploads_dir.join(filename)
 
-        # Salva o arquivo de forma persistente
         File.open(filepath, 'wb') do |f|
           f.write(file.read)
         end
 
-        # Enfileira o job passando o caminho persistente
         CsvProcessingJob.perform_later(filepath.to_s)
 
         render json: { message: "File is being processed" }, status: :accepted
