@@ -2,8 +2,11 @@ require 'csv'
 require 'date'
 require 'bigdecimal'
 require 'bigdecimal/util'
+require 'action_view'  # Adicionado para usar helpers de sanitização
 
 class CsvProcessor
+  include ActionView::Helpers::SanitizeHelper  # Inclui o método strip_tags
+
   def initialize(file_path, exchange_rates)
     @file_path = file_path
     @exchange_rates = exchange_rates
@@ -17,6 +20,8 @@ class CsvProcessor
       expiration_str = row['expiration']&.strip
 
       next unless name.present? && price_str.present? && expiration_str.present?
+
+      name = strip_tags(name)
 
       sanitized_price = price_str.gsub(/[^\d,\.]/, '')
       price = sanitized_price.tr(',', '.').to_d rescue nil
@@ -42,3 +47,4 @@ class CsvProcessor
     Product.insert_all(products) if products.any?
   end
 end
+
