@@ -2,10 +2,10 @@ require 'csv'
 require 'date'
 require 'bigdecimal'
 require 'bigdecimal/util'
-require 'action_view'  # Adicionado para usar helpers de sanitização
+require 'action_view'
 
 class CsvProcessor
-  include ActionView::Helpers::SanitizeHelper  # Inclui o método strip_tags
+  include ActionView::Helpers::SanitizeHelper
 
   def initialize(file_path, exchange_rates)
     @file_path = file_path

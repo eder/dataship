@@ -6,7 +6,7 @@ class ExchangeRateFetcher
   def self.fetch_rates
     date = ENV.fetch("EXCHANGE_API_DATE", "latest")
     api_version = ENV.fetch("EXCHANGE_API_VERSION", "v1")
-    currencies = ENV.fetch("EXCHANGE_CURRENCIES", "eur,gbp,jpy,aud,cad").split(',')
+    currencies = ENV.fetch("EXCHANGE_CURRENCIES", "brl,rub,inr,cny,zar").split(',')
 
     rates = {}
     currencies.each do |currency|
