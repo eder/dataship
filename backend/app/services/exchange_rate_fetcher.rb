@@ -6,18 +6,28 @@ class ExchangeRateFetcher
   def self.fetch_rates
     date = ENV.fetch("EXCHANGE_API_DATE", "latest")
     api_version = ENV.fetch("EXCHANGE_API_VERSION", "v1")
-    currencies = ENV.fetch("EXCHANGE_CURRENCIES", "brl,rub,inr,cny,zar").split(',')
+    desired_currencies = ENV.fetch("EXCHANGE_CURRENCIES", "usd,rub,inr,cny,zar,brl")
+                                  .split(',')
+                                  .map(&:strip)
+                                  .map(&:downcase)
+    base_currency = "usd"
+
+    url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@#{date}/#{api_version}/currencies/#{base_currency}.json"
+    response = HTTParty.get(url)
 
     rates = {}
-    currencies.each do |currency|
-      url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@#{date}/#{api_version}/currencies/#{currency}.json"
-      response = HTTParty.get(url)
-      if response.success?
-        rates[currency] = response.parsed_response
-      else
-        rates[currency] = {}
+    if response.success?
+      base_rates = response.parsed_response[base_currency]
+      rates["USD"] = 1.0
+      desired_currencies.each do |curr|
+        next if curr == base_currency
+        rates[curr.upcase] = base_rates[curr] || nil
+      end
+    else
+      desired_currencies.each do |curr|
+        rates[curr.upcase] = nil
       end
     end
-    { fetched_at: Time.current, rates: rates }
+    rates
   end
 end

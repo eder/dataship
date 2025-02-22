@@ -8,7 +8,7 @@ include ActionView::Helpers::SanitizeHelper
 class CsvProcessor
   def initialize(file_path, exchange_rates)
     @file_path = file_path
-    @exchange_rates = exchange_rates
+    @exchange_rates = exchange_rates  
   end
 
   def process
@@ -34,7 +34,7 @@ class CsvProcessor
           name: name,
           price: price,
           expiration: expiration,
-          exchange_rates: @exchange_rates,
+          exchange_rates: @exchange_rates,  
           created_at: Time.current,
           updated_at: Time.current
         }
@@ -51,3 +51,4 @@ class CsvProcessor
     end
   end
 end
+
