@@ -6,9 +6,8 @@ import Notifications from './components/Notifications';
 const App: React.FC = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Função para atualizar a tabela (ex: ao terminar um upload ou ao receber notificação)
+  // Function to update the table (e.g. when finishing an upload or when receiving notification)
   const refreshTable = () => {
-    // Opcionalmente, você pode resetar para a página 1 aqui se desejar
     setRefreshKey(prev => prev + 1);
   };
 
