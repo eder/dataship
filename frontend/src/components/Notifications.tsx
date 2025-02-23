@@ -13,7 +13,7 @@ const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
     const subscription = cable.subscriptions.create('NotificationsChannel', {
       received: (data: any) => {
         setNotification(data.message);
-        onNotification(); // Atualiza a tabela quando a notificação chega
+        onNotification();
         setTimeout(() => setNotification(''), 3000);
       },
     });

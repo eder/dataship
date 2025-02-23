@@ -29,11 +29,11 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
       await uploadProducts(file, (progress) => {
         setUploadProgress(progress);
       });
-      setMessage('Upload realizado com sucesso!');
-      onUploadSuccess(); // Chama a callback para atualizar a tabela
+      setMessage('Upload successful!');
+      onUploadSuccess();
     } catch (error) {
-      console.error('Erro no upload:', error);
-      setMessage('Erro no upload.');
+      console.error('upload error:', error);
+      setMessage('upload error.');
     } finally {
       setUploading(false);
     }
@@ -43,12 +43,12 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
     <div className="mb-8">
       <div {...getRootProps()} className="p-4 border-dashed border-2 border-gray-400 cursor-pointer">
         <input {...getInputProps()} />
-        <p>Arraste e solte um arquivo CSV aqui ou clique para selecionar</p>
+        <p>Drag and drop a CSV file here or click to select</p>
       </div>
       {uploading && (
         <div className="mt-4">
           <progress value={uploadProgress} max={100} className="w-full"></progress>
-          <p>Enviando: {uploadProgress}%</p>
+          <p>Sending: {uploadProgress}%</p>
         </div>
       )}
       {message && <p className="mt-4 text-green-600">{message}</p>}

@@ -34,10 +34,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
     }
   };
 
-  // Atualiza a listagem sempre que refreshKey mudar
   useEffect(() => {
     loadProducts(currentPage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey, currentPage, filterText, sortField, sortOrder]);
 
   const handleSort = (field: string) => {
