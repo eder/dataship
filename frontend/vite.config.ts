@@ -23,5 +23,14 @@ export default defineConfig({
   },
   server: {
     allowedHosts: true,
+    host: '0.0.0.0',
+    port: 5000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost', // ou http://localhost:3000 se sua API estiver na porta 3000
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   }
 });
