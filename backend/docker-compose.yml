@@ -1,4 +1,13 @@
 services:
+  nginx:
+    image: nginx:stable
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+
   db:
     image: postgres:13
     environment:
@@ -36,6 +45,7 @@ services:
       - EXCHANGE_CURRENCIES=${EXCHANGE_CURRENCIES}
       - CSV_MAX_LINES=${CSV_MAX_LINES}
       - RAILS_MAX_THREADS=${RAILS_MAX_THREADS}
+
   sidekiq:
     build: .
     command: bundle exec sidekiq -C config/sidekiq.yml
@@ -54,6 +64,6 @@ services:
       - EXCHANGE_API_VERSION=${EXCHANGE_API_VERSION}
       - EXCHANGE_CURRENCIES=${EXCHANGE_CURRENCIES}
       - CSV_MAX_LINES=${CSV_MAX_LINES}
+
 volumes:
   db-data:
-
