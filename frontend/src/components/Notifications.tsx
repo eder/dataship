@@ -8,6 +8,7 @@ interface NotificationsProps {
 const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
   const [notification, setNotification] = useState('');
 
+  // Configuration values, using environment variables
   const wsUrl = 'ws://localhost/cable';
   const channel = 'NotificationsChannel';
 
@@ -17,7 +18,7 @@ const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
       received: (data: any) => {
         setNotification(data.message);
         onNotification();
-        setTimeout(() => setNotification(''), 5000);
+        setTimeout(() => setNotification(''), 3000);
       },
     });
 

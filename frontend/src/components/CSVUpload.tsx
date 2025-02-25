@@ -4,12 +4,12 @@ import { uploadProducts } from '../api/products';
 
 interface CSVUploadProps {
   onUploadSuccess: () => void;
+  setUploadMessage: (msg: string) => void;
 }
 
-const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
+const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess, setUploadMessage }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState('');
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -29,11 +29,14 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
       await uploadProducts(file, (progress) => {
         setUploadProgress(progress);
       });
-      setMessage('Upload successful! Your file is being processed. You will be notified when processing is complete.');
+      // Set the message via the prop function
+      setUploadMessage(
+        'Upload successful! Your file is being processed. You will be notified when processing is complete.'
+      );
       onUploadSuccess();
     } catch (error) {
       console.error('Upload error:', error);
-      setMessage('Upload failed.');
+      setUploadMessage('Upload failed.');
     } finally {
       setUploading(false);
     }
@@ -51,7 +54,6 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
           <p>Uploading: {uploadProgress}%</p>
         </div>
       )}
-      {message && <p className="mt-4 text-green-600">{message}</p>}
     </div>
   );
 };

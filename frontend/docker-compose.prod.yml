@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    restart: always
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    external: true
+

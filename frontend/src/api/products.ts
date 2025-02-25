@@ -1,3 +1,4 @@
+// src/api/products.ts
 import axios from 'axios';
 
 export interface Meta {
@@ -25,6 +26,7 @@ export interface ApiResponse {
   products: Product[];
 }
 
+// Use environment variables or fallback.
 const API_BASE_URL = '/api/products';
 
 export const uploadProducts = async (file: File, onProgress: (progress: number) => void): Promise<any> => {

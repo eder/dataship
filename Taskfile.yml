@@ -1,0 +1,82 @@
+version: '3'
+
+tasks:
+  network-setup:
+    desc: "Ensure Docker network 'app_net' exists"
+    cmds:
+      - docker network inspect app_net || docker network create --driver bridge app_net
+
+  prod-up:
+    desc: "Bring up the production environment: backend, frontend, and Nginx"
+    deps: [network-setup, backend-up, frontend-up, nginx-up]
+
+  prod-down:
+    desc: "Bring down the production environment: backend, frontend, and Nginx"
+    deps: [backend-down, frontend-down, nginx-down]
+
+  backend-up:
+    desc: "Bring up the backend in production"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.prod.yml up --build -d
+
+  backend-down:
+    desc: "Bring down the backend in production"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.prod.yml down
+
+  frontend-up:
+    desc: "Bring up the frontend in production"
+    cmds:
+      - cd frontend && docker-compose -f docker-compose.prod.yml up --build -d
+
+  frontend-down:
+    desc: "Bring down the frontend in production"
+    cmds:
+      - cd frontend && docker-compose -f docker-compose.prod.yml down
+
+  nginx-up:
+    desc: "Bring up Nginx in production"
+    cmds:
+      - docker-compose -f docker-compose.prod.nginx.yml up --build -d
+
+  nginx-down:
+    desc: "Bring down Nginx in production"
+    cmds:
+      - docker-compose -f docker-compose.prod.nginx.yml down
+
+  logs-backend:
+    desc: "Tail the backend logs"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.prod.yml logs -f
+
+  logs-frontend:
+    desc: "Tail the frontend logs"
+    cmds:
+      - cd frontend && docker-compose -f docker-compose.prod.yml logs -f
+
+  logs-nginx:
+    desc: "Tail the Nginx logs"
+    cmds:
+      - docker-compose -f docker-compose.prod.nginx.yml logs -f
+
+  test-backend-rspec:
+    desc: "Run backend RSpec tests inside container with test environment"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.test.yml  run --rm backend rake db:create db:migrate RAILS_ENV=test
+      - cd backend && docker-compose -f docker-compose.test.yml run --rm backend bundle exec rspec
+
+  test-backend-cucumber:
+    desc: "Run backend Cucumber tests inside container with test environment"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.test.yml run --rm backend rake db:create db:migrate RAILS_ENV=test
+      - cd backend && docker-compose -f docker-compose.test.yml run --rm backend bundle exec cucumber
+
+  test-frontend:
+    desc: "Run frontend tests inside container using the default docker-compose"
+    cmds:
+      - cd frontend && docker-compose -f docker-compose.test.yml run --rm frontend_test npm install && npm  run test
+
+  test-all:
+    desc: "Run all tests: backend (RSpec & Cucumber) and frontend"
+    deps: [test-backend-rspec, test-backend-cucumber, test-frontend]
+

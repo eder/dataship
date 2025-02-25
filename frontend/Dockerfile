@@ -1,27 +1,30 @@
-# Stage 1: Build the React application using Node v22.14.0
+# Etapa 1: Build da aplicação React
 FROM node:22.14.0 AS builder
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copia os arquivos de dependências e instala
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application code
+# Copia o restante do código da aplicação
 COPY . .
 
-# Build the application for production
+# Gera o build para produção (assumindo que a saída do Vite vai para a pasta "dist")
 RUN npm run build
 
-# Stage 2: Serve the built files using Nginx
-FROM nginx:alpine
-# Remove default nginx static assets
-RUN rm -rf /usr/share/nginx/html/*
+# Etapa 2: Imagem final para servir a aplicação com o "serve"
+FROM node:22.14.0
+WORKDIR /app
 
-# Copy the build output from the builder stage to Nginx's public folder
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copia os arquivos gerados na etapa de build
+COPY --from=builder /app/dist ./dist
 
-# Expose port 80 for the container
-EXPOSE 80
+# Instala o pacote "serve" globalmente para servir os arquivos estáticos
+RUN npm install -g serve
 
-# Start Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Expõe a porta desejada
+EXPOSE 3001
+
+# Comando para iniciar o servidor estático
+CMD ["serve", "-s", "dist", "-l", "3001"]
+

@@ -12,29 +12,38 @@ interface ProductTableProps {
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
-  // Get search params from URL
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Initialize state from URL query parameters (with defaults)
-  const initialPage = Number(searchParams.get('page')) || 1;
+  // Default values: no default sorting.
+  const defaultPage = 1;
+  const defaultSort: string | undefined = undefined;
+  const defaultOrder: 'asc' | 'desc' | undefined = undefined;
+
+  // Initialize state from URL query parameters.
+  const initialPage = Number(searchParams.get('page')) || defaultPage;
   const initialFilter = searchParams.get('name') || '';
-  const initialSort = searchParams.get('sort') || 'name';
-  const initialOrder = searchParams.get('order') as 'asc' | 'desc' || 'asc';
+  const initialSort = searchParams.get('sort') || defaultSort;
+  const initialOrder = (searchParams.get('order') as 'asc' | 'desc') || defaultOrder;
 
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [filterText, setFilterText] = useState(initialFilter);
-  const [sortField, setSortField] = useState(initialSort);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialOrder);
+  const [sortField, setSortField] = useState<string | undefined>(initialSort);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>(initialOrder);
 
-  // Update URL query parameters whenever the state changes
+  // Update URL query parameters only if they differ from defaults.
   useEffect(() => {
-    const params: Record<string, string> = {
-      page: currentPage.toString(),
-      sort: sortField,
-      order: sortOrder,
-    };
+    const params = new URLSearchParams();
+    if (currentPage !== defaultPage) {
+      params.set('page', currentPage.toString());
+    }
     if (filterText) {
-      params.name = filterText;
+      params.set('name', filterText);
+    }
+    if (sortField) {
+      params.set('sort', sortField);
+    }
+    if (sortOrder) {
+      params.set('order', sortOrder);
     }
     setSearchParams(params);
   }, [currentPage, filterText, sortField, sortOrder, setSearchParams]);
@@ -48,6 +57,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
     refreshKey,
   });
 
+  // Handle sort: toggling order if same field, otherwise set new sort.
+  // (For this example, we assume sorting resets pagination; if you don't want that, remove the reset.)
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -55,6 +66,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
       setSortField(field);
       setSortOrder('asc');
     }
+    // Optionally, you can decide whether to reset page or not.
+    // Here, we keep the current page.
   };
 
   const totalPages = data ? Math.ceil(data.meta.total_results / data.meta.per_page) : 1;
@@ -68,7 +81,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
           placeholder="Filter by product name"
           value={filterText}
           onChange={(e) => {
-            setCurrentPage(1);
+            // Do not reset the currentPage when filtering.
             setFilterText(e.target.value);
           }}
           className="mb-2 md:mb-0 p-2 border border-gray-300 rounded"
@@ -90,7 +103,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
                 <th className="border p-2 cursor-pointer" onClick={() => handleSort('expiration')}>
                   Expiration Date
                 </th>
-                <th className="border p-2">Exchange Rates</th>
+                <th className="border p-2">Comparisons</th>
               </tr>
             </thead>
             <tbody>

@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  frontend:prod:
+    desc: "Build and run the production container for the frontend"
+    cmds:
+      - docker-compose -f docker-compose.prod.yml build up
+    sources:
+      - Dockerfile
+      - docker-compose.prod.yml
+

@@ -1,10 +1,8 @@
 x-common-env: &common-env
-  RAILS_ENV: production
   DATABASE_HOST: ${DATABASE_HOST}
   DATABASE_USERNAME: ${DATABASE_USERNAME}
   DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  DATABASE_NAME: ${DATABASE_NAME_PROD}
-  DATABASE_QUEUE_PROD: ${DATABASE_QUEUE_PROD}
+  DATABASE_NAME: ${DATABASE_NAME_TEST}
   REDIS_URL: ${REDIS_URL}
   EXCHANGE_API_DATE: ${EXCHANGE_API_DATE}
   EXCHANGE_API_VERSION: ${EXCHANGE_API_VERSION}
@@ -14,9 +12,24 @@ x-common-env: &common-env
   RAILS_MAX_THREADS: ${RAILS_MAX_THREADS}
 
 services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+
   backend:
     build: .
-    command: bundle exec puma -C config/puma.rb
     volumes:
       - .:/app
     ports:
@@ -25,8 +38,6 @@ services:
       - db
       - redis
     environment: *common-env
-    networks:
-      - app_net
 
   sidekiq:
     build: .
@@ -37,32 +48,6 @@ services:
       - db
       - redis
     environment: *common-env
-    networks:
-      - app_net
-
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME_PROD}
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    ports:
-      - "${DATABASE_PORT:-5432}:5432"
-    networks:
-      - app_net
-
-  redis:
-    image: redis:6-alpine
-    ports:
-      - "6379:6379"
-    networks:
-      - app_net
-
-networks:
-  app_net:
-    external: true
 
 volumes:
   db-data:

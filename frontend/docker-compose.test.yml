@@ -1,0 +1,9 @@
+services:
+  frontend_test:
+    image: node:22.14.0
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run test
+
