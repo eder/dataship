@@ -1,8 +1,7 @@
 FactoryBot.define do
   factory :product do
-    name { "Product Name" }
-    price { 9.99 }
-    expiration { Date.today + 30 }
-    exchange_rates { { "USD" => 5.0, "EUR" => 5.5 } }
+    name { "Test Product" }
+    price { rand(10..100) }
+    expiration { Date.today + rand(1..30).days }
   end
 end
