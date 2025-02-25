@@ -9,7 +9,7 @@ interface ProductRowProps {
 const ProductRow: React.FC<ProductRowProps> = ({ product }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const toggleExpand = () => setExpanded((prev) => !prev);
+  const toggleExpand = () => setExpanded(prev => !prev);
 
   const formatPrice = (price: string, currency: string) => {
     return new Intl.NumberFormat('en-US', {
@@ -55,4 +55,3 @@ const ProductRow: React.FC<ProductRowProps> = ({ product }) => {
 };
 
 export default ProductRow;
-

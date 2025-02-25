@@ -1,44 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { fetchProducts, Product, ApiResponse } from '../api/products';
+import React, { useState } from 'react';
+import { format } from 'date-fns';
+import { Product } from '../api/products';
 import ProductRow from './ProductRow';
 import Pagination from './Pagination';
+import Spinner from './Spinner';
+import { useProducts } from '../hooks/useProducts';
 
 interface ProductTableProps {
   refreshKey: number;
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
-  const [data, setData] = useState<ApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterText, setFilterText] = useState('');
   const [sortField, setSortField] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const perPage = 10;
-
-  const loadProducts = async (page: number) => {
-    setLoading(true);
-    try {
-      const params = {
-        page,
-        per_page: perPage,
-        name: filterText || undefined,
-        sort: sortField,
-        order: sortOrder,
-      };
-      const result = await fetchProducts(params);
-      setData(result);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadProducts(currentPage);
-  }, [refreshKey, currentPage, filterText, sortField, sortOrder]);
+  const { data, loading } = useProducts({
+    page: currentPage,
+    per_page: 10,
+    name: filterText,
+    sort: sortField,
+    order: sortOrder,
+    refreshKey,
+  });
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -53,7 +38,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Filter by product name</h2>
+      <h2 className="text-xl font-semibold mb-4">Uploaded Products</h2>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
         <input
           type="text"
@@ -67,9 +52,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
         />
       </div>
       {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
-        </div>
+        <Spinner />
       ) : data && data.products.length > 0 ? (
         <>
           <table className="min-w-full border-collapse">
@@ -106,4 +89,3 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
 };
 
 export default ProductTable;
-
