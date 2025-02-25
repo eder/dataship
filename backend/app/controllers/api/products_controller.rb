@@ -22,9 +22,11 @@ module Api
     paginated_products = products.offset(offset).limit(per_page)
 
     render json: {
-      current_page: page,
-      per_page: per_page,
-      total_results: total_results,
+      meta: {
+        current_page: page,
+        per_page: per_page,
+        total_results: total_results
+      },
       products: ActiveModelSerializers::SerializableResource.new(paginated_products, each_serializer: ProductSerializer)
     }
   end
