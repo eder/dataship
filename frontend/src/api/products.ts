@@ -1,3 +1,4 @@
+// src/api/products.ts
 import axios from 'axios';
 
 export interface Meta {
@@ -20,20 +21,18 @@ export interface ApiResponse {
   products: Product[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = '/api/products';
 
 export const uploadProducts = async (file: File, onProgress: (progress: number) => void): Promise<any> => {
   const formData = new FormData();
   formData.append('file', file);
 
   const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
+    headers: {'Content-Type': 'multipart/form-data'},
     onUploadProgress: (progressEvent) => {
       const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
       onProgress(progress);
-    }
+    },
   });
   return response.data;
 };

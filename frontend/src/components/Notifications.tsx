@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ActionCable from 'actioncable';
 
-const WS_URL = import.meta.env.VITE_WS_URL;
-const CABLE_CHANNEL = import.meta.env.VITE_CABLE_CHANNEL;
-
 interface NotificationsProps {
   onNotification: () => void;
 }
@@ -11,9 +8,12 @@ interface NotificationsProps {
 const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
   const [notification, setNotification] = useState('');
 
+  const wsUrl = 'ws://localhost/cable';
+  const channel = 'NotificationsChannel';
+
   useEffect(() => {
-    const cable = ActionCable.createConsumer(WS_URL);
-    const subscription = cable.subscriptions.create(CABLE_CHANNEL || 'NotificationsChannel', {
+    const cable = ActionCable.createConsumer(wsUrl);
+    const subscription = cable.subscriptions.create(channel, {
       received: (data: any) => {
         setNotification(data.message);
         onNotification();
@@ -24,12 +24,12 @@ const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
     return () => {
       cable.subscriptions.remove(subscription);
     };
-  }, [onNotification]);
+  }, [onNotification, wsUrl, channel]);
 
   return (
     <>
       {notification && (
-        <div className="fixed top-4 right-4 bg-blue-500 text-white p-4 rounded shadow">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-4 rounded shadow">
           {notification}
         </div>
       )}
@@ -38,3 +38,4 @@ const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
 };
 
 export default Notifications;
+

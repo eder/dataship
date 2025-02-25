@@ -42,7 +42,7 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
   return (
     <div className="mb-8">
       <div {...getRootProps()} className="p-4 border-dashed border-2 border-gray-400 cursor-pointer">
-        <input {...getInputProps()} />
+        <input {...getInputProps()} data-testid="file-input" />
         <p>Drag and drop a CSV file here or click to select one</p>
       </div>
       {uploading && (
