@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { format } from 'date-fns';
-import { Product } from '../api/products';
+// src/components/ProductTable.tsx
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { fetchProducts, Product, ApiResponse } from '../api/products';
 import ProductRow from './ProductRow';
 import Pagination from './Pagination';
 import Spinner from './Spinner';
@@ -11,10 +12,32 @@ interface ProductTableProps {
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterText, setFilterText] = useState('');
-  const [sortField, setSortField] = useState('name');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  // Get search params from URL
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize state from URL query parameters (with defaults)
+  const initialPage = Number(searchParams.get('page')) || 1;
+  const initialFilter = searchParams.get('name') || '';
+  const initialSort = searchParams.get('sort') || 'name';
+  const initialOrder = searchParams.get('order') as 'asc' | 'desc' || 'asc';
+
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [filterText, setFilterText] = useState(initialFilter);
+  const [sortField, setSortField] = useState(initialSort);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialOrder);
+
+  // Update URL query parameters whenever the state changes
+  useEffect(() => {
+    const params: Record<string, string> = {
+      page: currentPage.toString(),
+      sort: sortField,
+      order: sortOrder,
+    };
+    if (filterText) {
+      params.name = filterText;
+    }
+    setSearchParams(params);
+  }, [currentPage, filterText, sortField, sortOrder, setSearchParams]);
 
   const { data, loading } = useProducts({
     page: currentPage,
@@ -55,7 +78,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
         <Spinner />
       ) : data && data.products.length > 0 ? (
         <>
-          <table className="min-w-full border-collapse">
+          <table id="productsTable" className="min-w-full border-collapse">
             <thead>
               <tr>
                 <th className="border p-2 cursor-pointer" onClick={() => handleSort('name')}>
@@ -89,3 +112,4 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
 };
 
 export default ProductTable;
+
