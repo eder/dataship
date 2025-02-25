@@ -1,4 +1,3 @@
-// src/api/products.ts
 import axios from 'axios';
 
 export interface Meta {
@@ -7,13 +6,18 @@ export interface Meta {
   total_results: number;
 }
 
+export interface Comparison {
+  exchangeRate: number;
+  price: number;
+}
+
 export interface Product {
   id: number;
   name: string;
-  price: string;
+  price: number;
   currency: string;
   expiration: string;
-  exchange_rates: {[key: string]: number};
+  comparisons: Record<string, Comparison>;
 }
 
 export interface ApiResponse {
