@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProducts, Product, PaginatedProducts } from '../api/products';
-import { format } from 'date-fns';
+import { fetchProducts, Product, ApiResponse } from '../api/products';
+import ProductRow from './ProductRow';
+import Pagination from './Pagination';
 
 interface ProductTableProps {
   refreshKey: number;
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
-  const [data, setData] = useState<PaginatedProducts | null>(null);
+  const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 10;
   const [filterText, setFilterText] = useState('');
   const [sortField, setSortField] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  const perPage = 10;
 
   const loadProducts = async (page: number) => {
     setLoading(true);
@@ -47,19 +49,11 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
     }
   };
 
-  const totalPages = data ? Math.ceil(data.total_results / data.per_page) : 1;
-
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (data && currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
+  const totalPages = data ? Math.ceil(data.meta.total_results / data.meta.per_page) : 1;
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Uploaded Products</h2>
+      <h2 className="text-xl font-semibold mb-4">Filter by product name</h2>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
         <input
           type="text"
@@ -71,39 +65,37 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
           }}
           className="mb-2 md:mb-0 p-2 border border-gray-300 rounded"
         />
-        <div className="flex space-x-2">
-          <button onClick={handlePrev} disabled={currentPage === 1} className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
-            Prev
-          </button>
-          <button onClick={handleNext} disabled={data && currentPage >= totalPages} className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
-            Next
-          </button>
-        </div>
       </div>
       {loading ? (
-        <p>Loading products...</p>
+        <div className="flex items-center justify-center h-64">
+          <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+        </div>
       ) : data && data.products.length > 0 ? (
         <>
           <table className="min-w-full border-collapse">
             <thead>
               <tr>
-                <th className="border p-2 cursor-pointer" onClick={() => handleSort('name')}>Product Name</th>
-                <th className="border p-2 cursor-pointer" onClick={() => handleSort('price')}>Price</th>
-                <th className="border p-2 cursor-pointer" onClick={() => handleSort('expiration')}>Expiration Date</th>
+                <th className="border p-2 cursor-pointer" onClick={() => handleSort('name')}>
+                  Product Name
+                </th>
+                <th className="border p-2 cursor-pointer" onClick={() => handleSort('price')}>
+                  Price
+                </th>
+                <th className="border p-2 cursor-pointer" onClick={() => handleSort('expiration')}>
+                  Expiration Date
+                </th>
+                <th className="border p-2">Exchange Rates</th>
               </tr>
             </thead>
             <tbody>
-              {data.products.map((product, index) => (
-                <tr key={index}>
-                  <td className="border p-2">{product.name}</td>
-                  <td className="border p-2">{product.price}</td>
-                  <td className="border p-2">{format(new Date(product.expiration), 'MM/dd/yyyy')}</td>
-                </tr>
+              {data.products.map((product: Product) => (
+                <ProductRow key={product.id} product={product} />
               ))}
             </tbody>
           </table>
-          <div className="mt-4 text-sm text-gray-600">
-            Page {data.current_page} of {totalPages} | Total Results: {data.total_results}
+          <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+          <div className="mt-2 text-sm text-gray-600 text-center">
+            Page {data.meta.current_page} of {totalPages} | Total Results: {data.meta.total_results}
           </div>
         </>
       ) : (
@@ -114,3 +106,4 @@ const ProductTable: React.FC<ProductTableProps> = ({ refreshKey }) => {
 };
 
 export default ProductTable;
+
