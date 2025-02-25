@@ -4,7 +4,9 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
-
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../../config/environment', __dir__)
+abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'cucumber/rails'
 
 # By default, any exception happening in your Rails application will bubble up
