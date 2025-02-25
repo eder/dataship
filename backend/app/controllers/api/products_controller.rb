@@ -1,42 +1,34 @@
 module Api
   class ProductsController < ApplicationController
-    # Pagination defaults to 10 records per page.
-  def index
-    page = params.fetch(:page, 1).to_i
-    per_page = params.fetch(:per_page, 10).to_i
-    offset = (page - 1) * per_page
+    def index
+      page = params.fetch(:page, 1).to_i
+      per_page = params.fetch(:per_page, 10).to_i
+      offset = (page - 1) * per_page
 
-    products = Product.all
-    products = products.where("name ILIKE ?", "%#{params[:name]}%") if params[:name].present?
-    products = products.where("price >= ?", params[:min_price]) if params[:min_price].present?
-    products = products.where("price <= ?", params[:max_price]) if params[:max_price].present?
-    products = products.where("expiration >= ?", params[:expiration_from]) if params[:expiration_from].present?
-    products = products.where("expiration <= ?", params[:expiration_to]) if params[:expiration_to].present?
+      products = Product.all
+      products = products.where("name ILIKE ?", "%#{params[:name]}%") if params[:name].present?
+      products = products.where("price >= ?", params[:min_price]) if params[:min_price].present?
+      products = products.where("price <= ?", params[:max_price]) if params[:max_price].present?
+      products = products.where("expiration >= ?", params[:expiration_from]) if params[:expiration_from].present?
+      products = products.where("expiration <= ?", params[:expiration_to]) if params[:expiration_to].present?
 
-    if params[:sort].present? && %w[name price expiration].include?(params[:sort])
-      order = params[:order] == "desc" ? :desc : :asc
-      products = products.order(params[:sort] => order)
+      if params[:sort].present? && %w[name price expiration].include?(params[:sort])
+        order = params[:order] == "desc" ? :desc : :asc
+        products = products.order(params[:sort] => order)
+      end
+
+      total_results = products.count
+      paginated_products = products.offset(offset).limit(per_page)
+
+      render json: {
+        meta: {
+          current_page: page,
+          per_page: per_page,
+          total_results: total_results
+        },
+        products: ActiveModelSerializers::SerializableResource.new(paginated_products, each_serializer: ProductSerializer)
+      }
     end
-
-    total_results = products.count
-    paginated_products = products.offset(offset).limit(per_page)
-
-    render json: {
-      meta: {
-        current_page: page,
-        per_page: per_page,
-        total_results: total_results
-      },
-      products: ActiveModelSerializers::SerializableResource.new(paginated_products, each_serializer: ProductSerializer)
-    }
-  end
-
-
-    def show
-      product = Product.find(params[:id])
-      render json: product
-    end
-
     # Receives a CSV file, stores it in a persistent directory, and enqueues a job for processing.
     def upload
       if params[:file].present?

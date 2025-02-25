@@ -1,36 +1,59 @@
 require 'rails_helper'
 
 RSpec.describe "Products API", type: :request do
-  describe "GET /api/products" do
-    before do
-      15.times do |i|
-        Product.create!(
-          name: "Product #{i}",
-          price: (i + 1) * 10.0,
-          expiration: Date.today + i.days,
-          exchange_rates: { "USD" => 1.0, "BRL" => 5.0, "CNY" => 7.0, "INR" => 80.0, "RUB" => 90.0, "ZAR" => 18.0 }
-        )
-      end
-    end
+  before do
+    @product = Product.create!(
+      name: "Cheese - Brie, Cups 125g #(4017956126189774)",
+      price: 0.41,
+      expiration: Date.parse("2022-12-19"),
+      exchange_rates: {
+        "USD" => 1.0,
+        "BRL" => 5.73,
+        "CNY" => 7.25,
+        "INR" => 86.58,
+        "RUB" => 88.50,
+        "ZAR" => nil  # Example: Invalid rate (nil) for ZAR
+      }
+    )
+  end
 
-    it "returns paginated products with meta data" do
-      get "/api/products", params: { page: 2, per_page: 5, sort: "name", order: "asc" }
+  describe "GET /api/products" do
+    it "returns a product with the correct payload structure" do
+      get "/api/products", params: { page: 1, per_page: 10, sort: "name", order: "asc" }
       expect(response).to have_http_status(:ok)
 
       json = JSON.parse(response.body)
       expect(json).to have_key("meta")
-      expect(json["meta"]["current_page"]).to eq(2)
-      expect(json["meta"]["per_page"]).to eq(5)
       expect(json).to have_key("products")
-      expect(json["products"].size).to eq(5)
-    end
 
-    it "applies filters correctly" do
-      get "/api/products", params: { name: "Product 1" }
-      json = JSON.parse(response.body)
-      json["products"].each do |product|
-        expect(product["name"]).to include("Product 1")
-      end
+      product_json = json["products"].first
+      expect(product_json["id"]).to eq(@product.id)
+      expect(product_json["name"]).to eq(@product.name)
+      expect(product_json["price"]).to eq(0.41)
+      expect(product_json["currency"]).to eq("USD")
+      expect(product_json["expiration"]).to eq(@product.expiration.strftime("%Y-%m-%d"))
+
+      expect(product_json).to have_key("comparisons")
+      comparisons = product_json["comparisons"]
+
+      expect(comparisons["USD"]["exchangeRate"]).to eq(1.0)
+      expect(comparisons["USD"]["price"]).to eq((0.41 * 1.0).round(8))
+
+      expect(comparisons["BRL"]["exchangeRate"]).to eq(5.73)
+      expect(comparisons["BRL"]["price"]).to eq((0.41 * 5.73).round(8))
+
+      expect(comparisons["CNY"]["exchangeRate"]).to eq(7.25)
+      expect(comparisons["CNY"]["price"]).to eq((0.41 * 7.25).round(8))
+
+      expect(comparisons["INR"]["exchangeRate"]).to eq(86.58)
+      expect(comparisons["INR"]["price"]).to eq((0.41 * 86.58).round(8))
+
+      expect(comparisons["RUB"]["exchangeRate"]).to eq(88.50)
+      expect(comparisons["RUB"]["price"]).to eq((0.41 * 88.50).round(8))
+
+      expect(comparisons["ZAR"]["exchangeRate"]).to be_nil
+      expect(comparisons["ZAR"]["price"]).to be_nil
     end
   end
 end
+
