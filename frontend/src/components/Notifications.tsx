@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ActionCable from 'actioncable';
 
+const WS_URL = import.meta.env.VITE_WS_URL;
+const CABLE_CHANNEL = import.meta.env.VITE_CABLE_CHANNEL;
+
 interface NotificationsProps {
   onNotification: () => void;
 }
@@ -9,12 +12,12 @@ const Notifications: React.FC<NotificationsProps> = ({ onNotification }) => {
   const [notification, setNotification] = useState('');
 
   useEffect(() => {
-    const cable = ActionCable.createConsumer('ws://localhost/cable');
-    const subscription = cable.subscriptions.create('NotificationsChannel', {
+    const cable = ActionCable.createConsumer(WS_URL);
+    const subscription = cable.subscriptions.create(CABLE_CHANNEL || 'NotificationsChannel', {
       received: (data: any) => {
         setNotification(data.message);
         onNotification();
-        setTimeout(() => setNotification(''), 3000);
+        setTimeout(() => setNotification(''), 5000);
       },
     });
 

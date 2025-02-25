@@ -20,7 +20,7 @@ export interface ApiResponse {
   products: Product[];
 }
 
-const API_BASE_URL = '/api/products';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const uploadProducts = async (file: File, onProgress: (progress: number) => void): Promise<any> => {
   const formData = new FormData();

@@ -29,11 +29,11 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
       await uploadProducts(file, (progress) => {
         setUploadProgress(progress);
       });
-      setMessage('Upload successful!');
+      setMessage('Upload successful! Your file is being processed. You will be notified when processing is complete.');
       onUploadSuccess();
     } catch (error) {
-      console.error('upload error:', error);
-      setMessage('upload error.');
+      console.error('Upload error:', error);
+      setMessage('Upload failed.');
     } finally {
       setUploading(false);
     }
@@ -43,12 +43,12 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
     <div className="mb-8">
       <div {...getRootProps()} className="p-4 border-dashed border-2 border-gray-400 cursor-pointer">
         <input {...getInputProps()} />
-        <p>Drag and drop a CSV file here or click to select</p>
+        <p>Drag and drop a CSV file here or click to select one</p>
       </div>
       {uploading && (
         <div className="mt-4">
           <progress value={uploadProgress} max={100} className="w-full"></progress>
-          <p>Sending: {uploadProgress}%</p>
+          <p>Uploading: {uploadProgress}%</p>
         </div>
       )}
       {message && <p className="mt-4 text-green-600">{message}</p>}
@@ -57,3 +57,4 @@ const CSVUpload: React.FC<CSVUploadProps> = ({ onUploadSuccess }) => {
 };
 
 export default CSVUpload;
+

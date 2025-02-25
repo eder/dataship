@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { Product } from '../api/products';
 import { format } from 'date-fns';
+
+const sanitize = (text: string): string => {
+  return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+};
 
 interface ProductRowProps {
   product: Product;
@@ -9,9 +14,9 @@ interface ProductRowProps {
 const ProductRow: React.FC<ProductRowProps> = ({ product }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const toggleExpand = () => setExpanded(prev => !prev);
+  const toggleExpand = () => setExpanded((prev) => !prev);
 
-  const formatPrice = (price: string, currency: string) => {
+  const formatPrice = (price: string, currency: string): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency,
@@ -21,7 +26,7 @@ const ProductRow: React.FC<ProductRowProps> = ({ product }) => {
   return (
     <>
       <tr>
-        <td className="border p-2">{product.name}</td>
+        <td className="border p-2">{sanitize(product.name)}</td>
         <td className="border p-2">{formatPrice(product.price, product.currency)}</td>
         <td className="border p-2">{format(new Date(product.expiration), 'MM/dd/yyyy')}</td>
         <td className="border p-2">
@@ -42,7 +47,7 @@ const ProductRow: React.FC<ProductRowProps> = ({ product }) => {
                 }).format(converted);
                 return (
                   <div key={key} className="p-2 border rounded">
-                    <strong>{key}:</strong> {formattedConverted}
+                    <strong>{sanitize(key)}:</strong> {formattedConverted}
                   </div>
                 );
               })}
@@ -55,3 +60,4 @@ const ProductRow: React.FC<ProductRowProps> = ({ product }) => {
 };
 
 export default ProductRow;
+
