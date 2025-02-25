@@ -1,8 +1,10 @@
 x-common-env: &common-env
+  RAILS_ENV: production
   DATABASE_HOST: ${DATABASE_HOST}
   DATABASE_USERNAME: ${DATABASE_USERNAME}
   DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  DATABASE_NAME: ${DATABASE_NAME}
+  DATABASE_NAME: ${DATABASE_NAME_PROD}
+  DATABASE_QUEUE_PROD: ${DATABASE_QUEUE_PROD}
   REDIS_URL: ${REDIS_URL}
   EXCHANGE_API_DATE: ${EXCHANGE_API_DATE}
   EXCHANGE_API_VERSION: ${EXCHANGE_API_VERSION}
@@ -26,7 +28,7 @@ services:
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_DB: ${DATABASE_NAME_PROD}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -39,7 +41,7 @@ services:
 
   backend:
     build: .
-    command: rails server -b 0.0.0.0
+    command: bundle exec puma -C config/puma.rb
     volumes:
       - .:/app
     ports:
@@ -61,4 +63,3 @@ services:
 
 volumes:
   db-data:
-

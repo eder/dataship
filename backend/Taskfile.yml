@@ -1,0 +1,61 @@
+version: '3'
+
+x-common-env: &common-env
+  DATABASE_HOST: ${DATABASE_HOST}
+  DATABASE_USERNAME: ${DATABASE_USERNAME}
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  DATABASE_NAME: ${DATABASE_NAME}
+  DATABASE_NAME_TEST: ${DATABASE_NAME_TEST}
+  DATABASE_NAME_PROD: ${DATABASE_NAME_PROD}
+  REDIS_URL: ${REDIS_URL}
+  EXCHANGE_API_DATE: ${EXCHANGE_API_DATE}
+  EXCHANGE_API_VERSION: ${EXCHANGE_API_VERSION}
+  EXCHANGE_CURRENCIES: ${EXCHANGE_CURRENCIES}
+  BASE_CURRENCY: ${BASE_CURRENCY}
+  CSV_MAX_LINES: ${CSV_MAX_LINES}
+  RAILS_MAX_THREADS: ${RAILS_MAX_THREADS}
+
+tasks:
+  dev:
+    desc: "Set up DB for development and start development environment"
+    deps: [db-dev]
+    cmds:
+      - docker-compose up --build
+
+  test:
+    desc: "Set up DB for test and run test suite"
+    deps: [db-test]
+    cmds:
+      - bundle exec rspec
+
+  prod:
+    desc: "Set up DB for production and start production environment"
+    deps: [db-prod]
+    cmds:
+      - docker-compose -f docker-compose.prod.yml up --build
+
+  db-dev:
+    desc: "Create and migrate database for development"
+    cmds:
+      - docker-compose run --rm backend rake db:create db:migrate RAILS_ENV=development
+
+  db-prod:
+    desc: "Create and migrate database for production"
+    cmds:
+      - docker-compose -f docker-compose.prod.yml run --rm backend rake db:create db:migrate RAILS_ENV=production
+
+  db-test:
+    desc: "Create and migrate database for test environment"
+    cmds:
+      - docker-compose run --rm backend rake db:create db:migrate RAILS_ENV=test
+
+  down:
+    desc: "Stop development containers"
+    cmds:
+      - docker-compose down
+
+  prod-down:
+    desc: "Stop production containers"
+    cmds:
+      - docker-compose -f docker-compose.prod.yml down
+

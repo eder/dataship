@@ -47,7 +47,7 @@ Rails.application.configure do
   config.cache_store = :solid_cache_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
+  config.active_job.queue_adapter = :sidekiq
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -75,6 +75,13 @@ Rails.application.configure do
 
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
+  config.action_cable.url = "ws://localhost/cable"
+  config.action_cable.allowed_request_origins = [
+  "http://localhost",
+  "http://127.0.0.1",
+  "http://localhost:5001",
+  "http://localhost:3000"
+]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
