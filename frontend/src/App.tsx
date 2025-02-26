@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState } from 'react';
 import CSVUpload from './components/CSVUpload';
 import ProductTable from './components/ProductTable';

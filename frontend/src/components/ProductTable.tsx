@@ -1,4 +1,3 @@
-// src/components/ProductTable.tsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchProducts, Product, ApiResponse } from '../api/products';

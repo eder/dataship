@@ -1,4 +1,3 @@
-// src/api/products.ts
 import axios from 'axios';
 
 export interface Meta {
