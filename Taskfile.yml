@@ -17,7 +17,7 @@ tasks:
   backend-up:
     desc: "Bring up the backend in production"
     cmds:
-      - cd backend && docker-compose -f docker-compose.prod.yml up --build -d
+      - cd backend && docker-compose -f docker-compose.prod.yml up -d
 
   backend-down:
     desc: "Bring down the backend in production"
@@ -27,7 +27,7 @@ tasks:
   frontend-up:
     desc: "Bring up the frontend in production"
     cmds:
-      - cd frontend && docker-compose -f docker-compose.prod.yml up --build -d
+      - cd frontend && docker-compose -f docker-compose.prod.yml up -d
 
   frontend-down:
     desc: "Bring down the frontend in production"
@@ -37,7 +37,7 @@ tasks:
   nginx-up:
     desc: "Bring up Nginx in production"
     cmds:
-      - docker-compose -f docker-compose.prod.nginx.yml up --build -d
+      - docker-compose -f docker-compose.prod.nginx.yml up -d
 
   nginx-down:
     desc: "Bring down Nginx in production"
