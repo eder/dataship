@@ -257,15 +257,6 @@ Start the development server with Vite:
 
 Access the application at http://localhost:5001.
 
-3. **Running the Application in Production with Docker & Task:**
-
-The application can be packaged and run in production via Docker, Docker Compose and Task.
-
-Build and Run in Production:
-- **Build and Run using container:**
-```task container:dev```
-This command will build the Docker image and start the container.
-
 ## Usage and Examples
 ### Main Features
 - CSV Upload:
@@ -295,9 +286,6 @@ The application has a complete test suite using Jest and React Testing Library t
 To run the tests:
 
 ```npm run test```
-or
-``` test-frontend```
-to test using docker container
 
 ### Main Tested Areas
 - CSVUpload Component:
