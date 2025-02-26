@@ -296,6 +296,69 @@ To run the tests:
 - Notifications Component:
 - Receiving notifications via ActionCable and updating the interface.
 
+### Technical Analysis and Improvement Suggestions for the Project
+
+To enhance quality, performance, and user experience, several technical
+improvements can be implemented.
+
+**1. Automated Testing and Code Standardization**
+
+Adopting modern testing tools and ensuring code quality is essential. On the
+testing front, utilizing **Cypress** for end-to-end tests allows simulation of
+real user scenarios in a fast and intuitive manner, helping to quickly identify
+bugs and integrating seamlessly with the CI/CD pipeline. Additionally,
+implementing **Cucumber** enables writing test scenarios in Gherkin,
+which facilitates clear communication between developers, QA, and stakeholders,
+ensuring that tests align with business requirements.
+
+For maintaining code consistency and readability, it is recommended to use
+**RuboCop** in the backend. RuboCop acts as a linter based on Ruby community
+conventions, ensuring maintainability. On the frontend, integrating **Prettier**
+standardizes the formatting of JavaScript, TypeScript, HTML, and CSS files,
+reducing merge conflicts and speeding up code reviews.
+
+**2. Chunked File Upload**
+
+To improve robustness and user experience during file uploads, implementing a
+**chunked upload** system is essential. On the client side, libraries such as
+**Resumable.js**, **Fine Uploader**, or **Dropzone** can be adopted to split
+files into smaller chunks, allowing uploads to resume in case of connection
+failures. This approach not only improves the experience on unstable connections
+but also efficiently distributes the load.
+
+On the backend, particularly in a Rails application, the server must be adapted
+to receive these chunks and assemble the complete file. This involves creating
+endpoints to handle each part, implementing logic to merge the chunks in the
+correct order, and adding validations (such as hash or size verification)
+after the file is reassembled. It may also be beneficial to perform this
+processing asynchronously to avoid blocking API responses.
+
+**3. Real-Time and Email Notifications**
+
+Enhancing communication with users during lengthy processes, such as file uploads
+and processing, can be achieved through real-time and email notifications.
+Currently, the system notifies the user when the processing is complete; however,
+a further improvement would be to send intermediate updates via **WebSocket**,
+allowing users to track every stage of the process in real time. This transparency
+boosts user confidence and improves overall experience.
+
+Additionally, implementing email notifications ensures that users receive updates
+even when they are not connected to the application. This could include sending
+an email at the start of the process, periodic updates (when applicable), and a
+final notification confirming that the processing has completed. Integrating
+with services such as SendGrid or Amazon SES can ensure the scalability and
+reliability of email delivery.
+
+**4. Server-Side Caching for API Filters**
+
+Finally, system performance can be significantly enhanced by implementing
+server-side caching for the main API filters. By using in-memory caching
+solutions like **Redis** or **Memcached**, frequently executed queries
+can be stored and the load on the database reduced. This strategy should
+include clear expiration and invalidation policies to ensure that the served
+data remains up-to-date without compromising performance. Implementing
+application-level caching directly in API endpoints can speed up responses and provide a smoother experience for users, particularly in high-demand scenarios.
+
 ## Additional Resources and Documentation
 - [Ruby on Rails Documentation](https://guides.rubyonrails.org/)
 - [Sidekiq Documentation](https://sidekiq.org/)
@@ -307,3 +370,7 @@ To run the tests:
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
 
 
+## Walk-through of my code and the experience you built.
+
+
+[video](https://share.vidyard.com/watch/naBKnXZoDv2kugwsE7Qo3n?)
