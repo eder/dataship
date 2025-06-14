@@ -6,6 +6,36 @@ tasks:
     cmds:
       - docker network inspect app_net || docker network create --driver bridge app_net
 
+  dev-up:
+    desc: "Bring up the production environment: backend, frontend, and Nginx"
+    deps: [frontend-dev]
+
+  dev-down:
+    desc: "Bring down the development environment: backend, frontend"
+    deps: [backend-dev-down, frontend-dev-down]
+
+  backend-dev:
+    desc: "Bring up the development environment: backendand Nginx"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.yml up -d
+
+  backend-dev-down:
+    desc: "Bring down the backend in dev"
+    cmds:
+      - cd backend && docker-compose -f docker-compose.yml down
+
+  frontend-dev:
+    desc: "Bring up the development environment:frontend"
+    cmds:
+      - cd frontend && npm run dev > ../frontend-dev.log 2>&1 & echo $! > ../frontend-dev.pid
+
+  frontend-dev-down:
+    desc: "Shut down the development environment: frontend"
+    cmds:
+      - PID=$(cat frontend-dev.pid)
+      - kill -9 $PID > kill.log 2>&1
+      - rm frontend-dev.pid
+      - rm frontend-dev.log
   prod-up:
     desc: "Bring up the production environment: backend, frontend, and Nginx"
     deps: [network-setup, backend-up, frontend-up, nginx-up]
