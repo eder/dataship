@@ -21,7 +21,7 @@ jobs:
       # Create a new repository in the organization
       - name: Create New Repository
         id: create-repo
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           script: |
@@ -48,7 +48,7 @@ jobs:
 
       # Add user as a collaborator to the new repository
       - name: Add Collaborator
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           script: |
