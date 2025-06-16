@@ -3,9 +3,10 @@ require 'date'
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'action_view'
-include ActionView::Helpers::SanitizeHelper
 
 class CsvProcessor
+  include ActionView::Helpers::SanitizeHelper
+  
   def initialize(file_path, exchange_rates)
     @file_path = file_path
     @exchange_rates = exchange_rates
