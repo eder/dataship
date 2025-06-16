@@ -1,93 +1,43 @@
 version: '3'
 
+x-common-env: &common-env
+  DATABASE_HOST: ${DATABASE_HOST}
+  DATABASE_USERNAME: ${DATABASE_USERNAME}
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  DATABASE_NAME: ${DATABASE_NAME}
+  DATABASE_NAME_TEST: ${DATABASE_NAME_TEST}
+  DATABASE_NAME_PROD: ${DATABASE_NAME_PROD}
+  REDIS_URL: ${REDIS_URL}
+  EXCHANGE_API_DATE: ${EXCHANGE_API_DATE}
+  EXCHANGE_API_VERSION: ${EXCHANGE_API_VERSION}
+  EXCHANGE_CURRENCIES: ${EXCHANGE_CURRENCIES}
+  BASE_CURRENCY: ${BASE_CURRENCY}
+  CSV_MAX_LINES: ${CSV_MAX_LINES}
+  RAILS_MAX_THREADS: ${RAILS_MAX_THREADS}
+
 tasks:
-  network-setup:
-    desc: "Ensure Docker network 'app_net' exists"
+
+  dev:
+    desc: "Set up DB for development and start development environment"
+    deps: [db-dev]
     cmds:
-      - docker network inspect app_net || docker network create --driver bridge app_net
+      -  cd backend && docker-compose up --build
 
-  dev-up:
-    desc: "Bring up the production environment: backend, frontend, and Nginx"
-    deps: [frontend-dev]
-
-  dev-down:
-    desc: "Bring down the development environment: backend, frontend"
-    deps: [backend-dev-down, frontend-dev-down]
-
-  backend-dev:
-    desc: "Bring up the development environment: backendand Nginx"
+  db-dev:
+    desc: "Create and migrate database for development"
     cmds:
-      - cd backend && docker-compose -f docker-compose.yml up -d
+      - cd backend && docker-compose run --rm backend rake db:create db:migrate RAILS_ENV=development
 
-  backend-dev-down:
-    desc: "Bring down the backend in dev"
+  down:
+    desc: "Stop development containers"
     cmds:
-      - cd backend && docker-compose -f docker-compose.yml down
+      - cd backend && docker-compose down
 
   frontend-dev:
     desc: "Bring up the development environment:frontend"
     cmds:
-      - cd frontend && npm run dev > ../frontend-dev.log 2>&1 & echo $! > ../frontend-dev.pid
+      - cd frontend && npm run dev 
 
-  frontend-dev-down:
-    desc: "Shut down the development environment: frontend"
-    cmds:
-      - PID=$(cat frontend-dev.pid)
-      - kill -9 $PID > kill.log 2>&1
-      - rm frontend-dev.pid
-      - rm frontend-dev.log
-  prod-up:
-    desc: "Bring up the production environment: backend, frontend, and Nginx"
-    deps: [network-setup, backend-up, frontend-up, nginx-up]
-
-  prod-down:
-    desc: "Bring down the production environment: backend, frontend, and Nginx"
-    deps: [backend-down, frontend-down, nginx-down]
-
-  backend-up:
-    desc: "Bring up the backend in production"
-    cmds:
-      - cd backend && docker-compose -f docker-compose.prod.yml up -d
-
-  backend-down:
-    desc: "Bring down the backend in production"
-    cmds:
-      - cd backend && docker-compose -f docker-compose.prod.yml down
-
-  frontend-up:
-    desc: "Bring up the frontend in production"
-    cmds:
-      - cd frontend && docker-compose -f docker-compose.prod.yml up -d
-
-  frontend-down:
-    desc: "Bring down the frontend in production"
-    cmds:
-      - cd frontend && docker-compose -f docker-compose.prod.yml down
-
-  nginx-up:
-    desc: "Bring up Nginx in production"
-    cmds:
-      - docker-compose -f docker-compose.prod.nginx.yml up -d
-
-  nginx-down:
-    desc: "Bring down Nginx in production"
-    cmds:
-      - docker-compose -f docker-compose.prod.nginx.yml down
-
-  logs-backend:
-    desc: "Tail the backend logs"
-    cmds:
-      - cd backend && docker-compose -f docker-compose.prod.yml logs -f
-
-  logs-frontend:
-    desc: "Tail the frontend logs"
-    cmds:
-      - cd frontend && docker-compose -f docker-compose.prod.yml logs -f
-
-  logs-nginx:
-    desc: "Tail the Nginx logs"
-    cmds:
-      - docker-compose -f docker-compose.prod.nginx.yml logs -f
 
   test-backend-rspec:
     desc: "Run backend RSpec tests inside container with test environment"
