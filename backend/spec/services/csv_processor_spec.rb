@@ -29,11 +29,13 @@ RSpec.describe CsvProcessor, type: :service do
     # Clean up the failed rows log file if it exists
     failed_rows_file = Rails.root.join('tmp', 'failed_rows.csv')
     File.delete(failed_rows_file) if File.exist?(failed_rows_file)
+    ENV.delete('CSV_MAX_LINES')
   end
 
   before do
     # Ensure there are no products before running tests
     Product.delete_all
+    ENV['CSV_MAX_LINES'] = '1000'
   end
 
   describe '#process' do
@@ -83,6 +85,53 @@ RSpec.describe CsvProcessor, type: :service do
       input = "Item A #(123) and Item B #(abc) and Item C #(456)"
       sanitized = processor.send(:sanitize_numeric_hash_content, input)
       expect(sanitized).to eq("Item A #(123) and Item B #() and Item C #(456)")
+    end
+  end
+
+  describe '#parse_rows' do
+    it 'yields each CSV row with line numbers' do
+      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
+      rows = processor.send(:parse_rows).to_a
+      expect(rows.first[0]).to eq(1)
+      expect(rows.size).to eq(4)
+      expect(rows.first[1]['name']).to eq('Valid Product #(123456)')
+    end
+  end
+
+  describe '#validate_row' do
+    it 'returns sanitized data hash for valid row and logs nothing' do
+      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
+      line, row = processor.send(:parse_rows).first
+      result = processor.send(:validate_row, line, row)
+      expect(result[:name]).to eq('Valid Product #(123456)')
+      expect(result[:price]).to eq(12.34.to_d)
+      expect(result[:expiration]).to eq(Date.strptime('1/31/2023', '%m/%d/%Y'))
+    end
+
+    it 'returns nil for invalid row' do
+      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
+      invalid_row = CSV.parse('Invalid;;1/31/2023', headers: %w[name price expiration], col_sep: ';').first
+      result = processor.send(:validate_row, 1, invalid_row)
+      expect(result).to be_nil
+    end
+  end
+
+  describe '#sanitize_row' do
+    it 'removes HTML and sanitizes numeric hash content' do
+      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
+      data = { name: '<b>Test #(abc) 123</b>', price: 1.to_d, expiration: Date.today }
+      sanitized = processor.send(:sanitize_row, data)
+      expect(sanitized[:name]).to eq('Test #() 123')
+    end
+  end
+
+  describe '#batch_insert' do
+    it 'inserts products when threshold is reached' do
+      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
+      products = Array.new(1000) { { name: 'A', price: 1.to_d, expiration: Date.today } }
+      expect(Product).to receive(:insert_all).with(products)
+      returned = processor.send(:batch_insert, products, 1000)
+      expect(returned).to eq([])
     end
   end
 end
