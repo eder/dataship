@@ -1,6 +1,35 @@
 require 'rails_helper'
 
 RSpec.describe Product, type: :model do
+  describe 'validations' do
+    it 'is invalid without a name' do
+      product = build(:product, name: nil)
+      expect(product).not_to be_valid
+      expect(product.errors[:name]).to include("can't be blank")
+    end
+
+    it 'is invalid without a price' do
+      product = build(:product, price: nil)
+      expect(product).not_to be_valid
+      expect(product.errors[:price]).to include("can't be blank")
+    end
+
+    it 'is invalid without an expiration date' do
+      product = build(:product, expiration: nil)
+      expect(product).not_to be_valid
+      expect(product.errors[:expiration]).to include("can't be blank")
+    end
+
+    it 'is invalid when price is not numeric' do
+      product = build(:product, price: 'abc')
+      expect(product).not_to be_valid
+      expect(product.errors[:price]).to include('is not a number')
+    end
+
+    it 'is valid with all required attributes' do
+      expect(build(:product)).to be_valid
+    end
+  end
   describe 'scopes' do
     before do
       @product1 = create(:product, name: "Apple", price: 100, expiration: Date.today + 10.days)
