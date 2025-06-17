@@ -7,10 +7,10 @@ module NotificationAdapters
       return false unless valid_notification_data?(message, data)
 
       topic_name = @config[:topic_name]
-      raise ArgumentError, 'topic_name is required for Google Pub/Sub adapter' unless topic_name
+      raise ArgumentError, "topic_name is required for Google Pub/Sub adapter" unless topic_name
 
       payload = format_payload(message, data)
-      
+
       pubsub_client.publish(
         topic_name,
         payload.to_json
@@ -22,7 +22,7 @@ module NotificationAdapters
     end
 
     def adapter_name
-      'google_pubsub'
+      "google_pubsub"
     end
 
     def available?
@@ -38,4 +38,4 @@ module NotificationAdapters
       )
     end
   end
-end 
+end

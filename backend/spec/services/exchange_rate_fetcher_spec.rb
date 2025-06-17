@@ -13,7 +13,7 @@ RSpec.describe ExchangeRateFetcher, type: :service do
       }
     }
 
-   # Use WebMock or allow/expect to stub HTTParty.get
+    # Use WebMock or allow/expect to stub HTTParty.get
     allow(HTTParty).to receive(:get).and_return(double(success?: true, parsed_response: fake_response))
 
     rates = ExchangeRateFetcher.fetch_rates

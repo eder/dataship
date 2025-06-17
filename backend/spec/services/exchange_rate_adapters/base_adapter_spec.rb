@@ -40,4 +40,4 @@ RSpec.describe ExchangeRateAdapters::BaseAdapter, type: :service do
       expect(adapter.send(:valid_rate?, nil)).to be false
     end
   end
-end 
+end

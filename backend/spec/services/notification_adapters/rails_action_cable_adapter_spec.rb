@@ -47,4 +47,4 @@ RSpec.describe NotificationAdapters::RailsActionCableAdapter do
       expect(adapter.available?).to be true
     end
   end
-end 
+end

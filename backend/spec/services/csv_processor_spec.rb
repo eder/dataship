@@ -15,7 +15,7 @@ RSpec.describe CsvProcessor, type: :service do
   end
 
   let(:temp_csv_path) do
-    file = Tempfile.new(['test_csv', '.csv'])
+    file = Tempfile.new([ 'test_csv', '.csv' ])
     file.write(csv_content)
     file.rewind
     path = file.path
@@ -131,4 +131,3 @@ RSpec.describe CsvProcessor, type: :service do
     end
   end
 end
-
