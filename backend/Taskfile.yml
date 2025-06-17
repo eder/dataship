@@ -33,11 +33,6 @@ tasks:
     cmds:
       - docker-compose run --rm backend rake db:create db:migrate RAILS_ENV=development
 
-  db-prod:
-    desc: "Create and migrate database for production"
-    cmds:
-      - docker-compose -f docker-compose.prod.yml run --rm backend rake db:create db:migrate RAILS_ENV=production
-
   db-test:
     desc: "Create and migrate database for test environment"
     cmds:
@@ -47,9 +42,3 @@ tasks:
     desc: "Stop development containers"
     cmds:
       - docker-compose down
-
-  prod-down:
-    desc: "Stop production containers"
-    cmds:
-      - docker-compose -f docker-compose.prod.yml down
-
