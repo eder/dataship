@@ -10,10 +10,10 @@ class CsvProcessingJob < ApplicationJob
   # @param notification_config [Hash] Configuration for the notification adapter
   def perform(file_path, notification_adapter = nil, notification_config = {})
     Rails.logger.info("Starting processing of file: #{file_path}")
-    
+
     orchestrator = CsvProcessingOrchestrator.new(file_path, notification_adapter, notification_config)
     orchestrator.process
-    
+
     Rails.logger.info("Successfully processed file: #{file_path}")
   rescue StandardError => e
     Rails.logger.error("Error processing file #{file_path}: #{e.message}")
@@ -21,4 +21,3 @@ class CsvProcessingJob < ApplicationJob
     raise e
   end
 end
-

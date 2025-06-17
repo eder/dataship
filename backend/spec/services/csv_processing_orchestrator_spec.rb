@@ -75,7 +75,7 @@ RSpec.describe CsvProcessingOrchestrator do
 
     it 'uses custom notification configuration' do
       custom_config = { topic_arn: 'arn:aws:sns:us-east-1:123456789012:my-topic' }
-      
+
       expect(NotificationService).to receive(:new).with('aws_sns', custom_config).and_return(notification_service)
 
       orchestrator = described_class.new(file_path, 'aws_sns', custom_config)
@@ -86,9 +86,9 @@ RSpec.describe CsvProcessingOrchestrator do
   private
 
   def create_temp_file(content)
-    file = Tempfile.new(['test_products', '.csv'])
+    file = Tempfile.new([ 'test_products', '.csv' ])
     file.write(content)
     file.rewind
     file.path
   end
-end 
+end

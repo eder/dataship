@@ -14,19 +14,19 @@ class CsvProcessingOrchestrator
   # @return [Boolean] Whether the processing was successful
   def process
     Rails.logger.info("Starting CSV processing for file: #{@file_path}")
-    
+
     start_time = Time.current
-    
+
     validate_file_exists
     exchange_rates = fetch_exchange_rates
     process_csv_file(exchange_rates)
-    
+
     end_time = Time.current
     processing_duration = (end_time - start_time).round(2)
-    
+
     # Ensure all database operations are committed before sending notification
     ActiveRecord::Base.connection.commit_db_transaction if ActiveRecord::Base.connection.transaction_open?
-    
+
     notify_success(processing_duration)
     Rails.logger.info("Completed CSV processing for file: #{@file_path} in #{processing_duration} seconds")
     true
@@ -49,12 +49,12 @@ class CsvProcessingOrchestrator
   # @param exchange_rates [Hash<String, Float>] Exchange rates for conversion
   def process_csv_file(exchange_rates)
     Rails.logger.info("Processing CSV file with exchange rates: #{@file_path}")
-    
+
     # Get file size for logging
     file_size = File.size(@file_path)
     file_size_mb = (file_size / 1024.0 / 1024.0).round(2)
     Rails.logger.info("File size: #{file_size_mb} MB")
-    
+
     CsvProcessor.new(@file_path, exchange_rates).process
     Rails.logger.info("CSV processing completed: #{@file_path}")
   end
@@ -99,4 +99,4 @@ class CsvProcessingOrchestrator
 
     raise ArgumentError, "File not found: #{@file_path}"
   end
-end 
+end

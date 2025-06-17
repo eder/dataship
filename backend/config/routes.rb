@@ -6,10 +6,10 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  mount ActionCable.server => '/cable'
+  mount ActionCable.server => "/cable"
 
   namespace :api do
-    resources :products, only: [:index] do
+    resources :products, only: [ :index ] do
       collection do
         post :upload
       end

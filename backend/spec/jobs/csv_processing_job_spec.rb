@@ -26,7 +26,7 @@ RSpec.describe CsvProcessingJob, type: :job do
   end
 
   it "processes a valid CSV and inserts products" do
-    file = Tempfile.new(['test_products', '.csv'])
+    file = Tempfile.new([ 'test_products', '.csv' ])
     file.write(csv_content)
     file.rewind
 
@@ -52,7 +52,7 @@ RSpec.describe CsvProcessingJob, type: :job do
       Invalid Product;;12/31/2025
       Another Product;$30.00;invalid_date
     CSV
-    file = Tempfile.new(['invalid_products', '.csv'])
+    file = Tempfile.new([ 'invalid_products', '.csv' ])
     file.write(invalid_csv)
     file.rewind
 
@@ -73,12 +73,12 @@ RSpec.describe CsvProcessingJob, type: :job do
   end
 
   it "allows custom notification adapter configuration" do
-    file = Tempfile.new(['test_products', '.csv'])
+    file = Tempfile.new([ 'test_products', '.csv' ])
     file.write(csv_content)
     file.rewind
 
     custom_config = { topic_arn: 'arn:aws:sns:us-east-1:123456789012:my-topic' }
-    
+
     expect(NotificationService).to receive(:new).with('aws_sns', custom_config).and_return(notification_service)
 
     CsvProcessingJob.perform_now(file.path, 'aws_sns', custom_config)
@@ -87,4 +87,3 @@ RSpec.describe CsvProcessingJob, type: :job do
     file.unlink
   end
 end
-

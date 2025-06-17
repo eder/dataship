@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'httparty'
+require "httparty"
 
 module ExchangeRateAdapters
   # Adapter for the @fawazahmed0/currency-api service
@@ -23,7 +23,7 @@ module ExchangeRateAdapters
     end
 
     def adapter_name
-      'fawazahmed0'
+      "fawazahmed0"
     end
 
     def available?
@@ -39,7 +39,7 @@ module ExchangeRateAdapters
 
     def extract_desired_currencies(config)
       currencies = config[:currencies] || ENV.fetch("EXCHANGE_CURRENCIES", "usd,rub,inr,cny,zar,brl")
-      currencies.split(',').map(&:strip).map(&:downcase)
+      currencies.split(",").map(&:strip).map(&:downcase)
     end
 
     def build_url

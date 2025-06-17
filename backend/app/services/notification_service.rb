@@ -33,4 +33,4 @@ class NotificationService
 
     raise StandardError, "Adapter '#{adapter_name}' is not available"
   end
-end 
+end

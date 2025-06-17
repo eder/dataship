@@ -4,14 +4,14 @@ require 'json'
 
 Given("a CSV file {string} with {int} rows of valid product data") do |file_path, row_count|
   full_path = Rails.root.join(file_path)
-  headers = ["name", "price", "expiration"]
+  headers = [ "name", "price", "expiration" ]
   dirname = File.dirname(full_path)
   FileUtils.mkdir_p(dirname) unless Dir.exist?(dirname)
 
   CSV.open(full_path, "w", col_sep: ";") do |csv|
     csv << headers
     row_count.times do |i|
-      csv << ["Test Product #{i}", "$10.00", "12/31/2025"]
+      csv << [ "Test Product #{i}", "$10.00", "12/31/2025" ]
     end
   end
 end
@@ -32,9 +32,8 @@ Then("after processing, when I request {string}") do |path|
   @json_response = JSON.parse(last_response.body)
 end
 
-#Then("the response meta information should indicate {string} as {int}") do |meta_key, expected_total|
-  #p "#{Rails.env}"
-  #expect(@json_response).to have_key("meta")
-  #expect(@json_response["meta"][meta_key]).to eq(expected_total)
-#end
-
+# Then("the response meta information should indicate {string} as {int}") do |meta_key, expected_total|
+# p "#{Rails.env}"
+# expect(@json_response).to have_key("meta")
+# expect(@json_response["meta"][meta_key]).to eq(expected_total)
+# end

@@ -41,4 +41,4 @@ RSpec.describe NotificationService do
       expect(service.adapter_available?).to be true
     end
   end
-end 
+end

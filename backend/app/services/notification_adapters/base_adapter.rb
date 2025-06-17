@@ -41,4 +41,4 @@ module NotificationAdapters
       }
     end
   end
-end 
+end

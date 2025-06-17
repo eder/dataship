@@ -41,4 +41,4 @@ RSpec.describe NotificationAdapters::Factory do
       expect(adapters).to include('rails_action_cable', 'aws_sns', 'aws_sqs', 'google_pubsub')
     end
   end
-end 
+end

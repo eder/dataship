@@ -56,4 +56,3 @@ RSpec.describe "Products API", type: :request do
     end
   end
 end
-

@@ -24,4 +24,3 @@ RSpec.describe 'Routing', type: :routing do
     end
   end
 end
-

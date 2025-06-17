@@ -136,7 +136,7 @@ RSpec.describe ExchangeRateAdapters::Fawazahmed0Adapter, type: :service do
         expect(adapter.send(:date)).to eq("2024-01-01")
         expect(adapter.send(:api_version)).to eq("v2")
         expect(adapter.send(:base_currency)).to eq("eur")
-        expect(adapter.send(:desired_currencies)).to eq(["usd", "gbp", "jpy"])
+        expect(adapter.send(:desired_currencies)).to eq([ "usd", "gbp", "jpy" ])
       end
     end
 
@@ -157,8 +157,8 @@ RSpec.describe ExchangeRateAdapters::Fawazahmed0Adapter, type: :service do
         adapter = described_class.new
         expect(adapter.send(:date)).to eq("2024-01-01")
         expect(adapter.send(:api_version)).to eq("v2")
-        expect(adapter.send(:desired_currencies)).to eq(["usd", "gbp", "jpy"])
+        expect(adapter.send(:desired_currencies)).to eq([ "usd", "gbp", "jpy" ])
       end
     end
   end
-end 
+end

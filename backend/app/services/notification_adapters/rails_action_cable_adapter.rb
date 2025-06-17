@@ -6,7 +6,7 @@ module NotificationAdapters
     def notify(message, data = {})
       return false unless valid_notification_data?(message, data)
 
-      channel_name = @config[:channel] || 'notifications_channel'
+      channel_name = @config[:channel] || "notifications_channel"
       payload = format_payload(message, data)
 
       ActionCable.server.broadcast(channel_name, payload)
@@ -17,11 +17,11 @@ module NotificationAdapters
     end
 
     def adapter_name
-      'rails_action_cable'
+      "rails_action_cable"
     end
 
     def available?
       defined?(ActionCable) && ActionCable.server.present?
     end
   end
-end 
+end

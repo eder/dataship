@@ -4,7 +4,7 @@ module ExchangeRateAdapters
   # Factory to create exchange rate adapters
   class Factory
     ADAPTERS = {
-      'fawazahmed0' => Fawazahmed0Adapter,
+      "fawazahmed0" => Fawazahmed0Adapter
       # Add new adapters here
       # 'exchangerate_api' => ExchangeRateApiAdapter,
       # 'fixer_io' => FixerIoAdapter,
