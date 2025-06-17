@@ -22,7 +22,11 @@ Implement a full-stack web or mobile application that can upload, process, and s
 
 -----
 
-## Below my 
+## Below my implementation
+![Screenshot 2025-06-17 at 17 04 05](https://github.com/user-attachments/assets/5d7649ed-c4cf-4268-90bc-353f05fc7995)
+
+
+![Screenshot 2025-06-17 at 17 05 10](https://github.com/user-attachments/assets/b379cba5-a329-43fb-947e-89fd1a358f45)
 
 
 - [Installation and Configuration](#installation-and-configuration)
