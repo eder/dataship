@@ -359,6 +359,143 @@ include clear expiration and invalidation policies to ensure that the served
 data remains up-to-date without compromising performance. Implementing
 application-level caching directly in API endpoints can speed up responses and provide a smoother experience for users, particularly in high-demand scenarios.
 
+# Datadog Configuration for Monitoring
+
+This document describes how to configure monitoring with Datadog for Rails + Node.js application.
+
+## Prerequisites
+
+1. Datadog account (https://www.datadoghq.com/)
+2. Datadog API Key
+3. Application ID for RUM (Real User Monitoring)
+
+## Backend Configuration (Rails)
+
+### 1. Install dependencies
+
+```bash
+cd backend
+bundle add ddtrace dogstatsd-ruby
+```
+
+### 2. Configure environment variables
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+# Datadog Configuration
+DD_API_KEY=your_datadog_api_key
+DD_ENV=development
+DD_SERVICE=rails-backend
+DD_VERSION=1.0.0
+DD_AGENT_HOST=datadog-agent
+DD_TRACE_AGENT_PORT=8126
+DD_STATSD_PORT=8125
+```
+
+### 3. Initialize the application
+
+```bash
+docker-compose up -d
+```
+
+## Frontend Configuration (React/Node.js)
+
+### 1. Install dependencies
+
+```bash
+cd frontend
+npm install @datadog/browser-rum @datadog/browser-logs
+```
+
+### 2. Configure environment variables
+
+Create a `.env` file in the `frontend/` directory:
+
+```env
+# Datadog Configuration
+VITE_DD_APPLICATION_ID=your_application_id
+VITE_DD_CLIENT_TOKEN=your_client_token
+VITE_DD_SITE=datadoghq.com
+VITE_DD_ENV=development
+VITE_DD_VERSION=1.0.0
+
+# API Configuration
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+### 3. Initialize the application
+
+```bash
+npm run dev
+```
+
+## Available Metrics
+
+### Backend (Rails)
+- **HTTP Requests**: Request count and duration
+- **Database Queries**: PostgreSQL query performance
+- **Redis Operations**: Redis operations performance
+- **Sidekiq Jobs**: Background job metrics
+- **Health Checks**: Service status
+- **Custom Metrics**: Custom Application Metrics
+
+### Frontend (React)
+- **Page Views**: Page views
+- **User Interactions**: User interactions
+- **API Calls**: Requests to the backend
+- **Performance**: Browser performance metrics
+- **Errors**: JavaScript errors captured
+- **Session Replay**: Session recording (configurable)
+
+## Recommended Dashboards
+
+1. **Application Overview**: Application overview
+2. **Backend Performance**: Rails performance
+3. **Frontend Performance**: React performance
+4. **Database Performance**: PostgreSQL performance
+5. **Background Jobs**: Sidekiq metrics
+6. **Error Tracking**: Error tracking
+
+## Recommended Alerts
+
+1. **High Error Rate**: Error rate > 5%
+2. **High Response Time**: Response time > 2s
+3. **Database Connection Issues**: Problems connecting to DB
+4. **Sidekiq Queue Backlog**: Job queue > 1000
+5. **Memory Usage**: Memory usage > 80%
+6. **Health Check Failures**: Health check failures
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Datadog Agent not connecting**: Check API key and network configuration
+2. **Metrics not showing**: Check if the agent is running
+3. **RUM not working**: Check Application ID and Client Token
+4. **Tracing not working**: Check tracer configuration
+
+### Useful Logs
+
+```bash
+# Check Datadog Agent logs
+docker-compose logs datadog-agent
+
+# Check backend logs
+docker-compose logs backend
+
+# Check frontend logs
+npm run dev
+```
+
+## Next Steps
+
+1. Configure custom dashboards
+2. Implement specific alerts
+3. Configure log aggregation
+4. Implement APM (Application Performance Monitoring)
+5. Configure Synthetic Monitoring
+
 ## Additional Resources and Documentation
 - [Ruby on Rails Documentation](https://guides.rubyonrails.org/)
 - [Sidekiq Documentation](https://sidekiq.org/)
