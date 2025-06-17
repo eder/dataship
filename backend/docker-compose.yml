@@ -12,6 +12,8 @@ x-common-env: &common-env
   RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
   DB_POOL_SIZE: ${DB_POOL_SIZE:-20}
   CSV_BATCH_SIZE: ${CSV_BATCH_SIZE:-1000}
+  DD_API_KEY: ${DD_API_KEY}
+  DD_SITE: ${DD_SITE:-datadoghq.com}
 
 services:
   nginx:
@@ -26,15 +28,15 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-12345}
-      POSTGRES_DB: ${DATABASE_NAME:-api_development}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "${DATABASE_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-api_development}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -76,7 +78,10 @@ services:
           memory: 2G
         reservations:
           memory: 1G
-
+  datadog:
+    image: gcr.io/datadoghq/agent:latest
+    environment: *common-env
+    ports:
+      - "8126:8126"
 volumes:
   db-data:
-
