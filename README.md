@@ -23,15 +23,6 @@ Implement a full-stack web or mobile application that can upload, process, and s
 -----
 
 ## Here is my implementation along with some examples.
-![Screenshot 2025-06-17 at 17 04 05](https://github.com/user-attachments/assets/5d7649ed-c4cf-4268-90bc-353f05fc7995)
-
-
-![Screenshot 2025-06-17 at 17 05 10](https://github.com/user-attachments/assets/b379cba5-a329-43fb-947e-89fd1a358f45)
-
-
-![Screenshot 2025-06-17 at 17 07 54](https://github.com/user-attachments/assets/7190053e-6f71-4afb-8a8f-c847ccf1af08)
-
-![Screenshot 2025-06-17 at 17 09 02](https://github.com/user-attachments/assets/2661b926-1a15-4083-beda-2ce2e68a0275)
 
 - [Installation and Configuration](#installation-and-configuration)
 - [Usage and Examples](#usage-and-examples)
@@ -292,9 +283,11 @@ Filters and pagination are synchronized with the URL, but only parameters that d
 
 ### Visual Examples
 CSV Upload and Progress:
-![tela-1](https://github.com/user-attachments/assets/49839c65-f390-471e-a5c6-88f4cfa04632)
+![Screenshot 2025-06-17 at 17 05 10](https://github.com/user-attachments/assets/b379cba5-a329-43fb-947e-89fd1a358f45)
 Product Table with Pagination:
-![tela-2](https://github.com/user-attachments/assets/68e86126-0b00-4b7d-ac9a-c4c705735b4e)
+![Screenshot 2025-06-17 at 17 07 54](https://github.com/user-attachments/assets/7190053e-6f71-4afb-8a8f-c847ccf1af08)
+
+![Screenshot 2025-06-17 at 17 09 02](https://github.com/user-attachments/assets/2661b926-1a15-4083-beda-2ce2e68a0275)
 ## Tests
 The application has a complete test suite using Jest and React Testing Library to ensure the robustness of the features.
 
