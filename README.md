@@ -1,9 +1,9 @@
 # Full-Stack Developer Coding Test
-## Backend API - CSV Product Upload & Listinig
+## Backend API - CSV Product Upload & Listing
 
 ## Context
 
-Implement a full-stack web or mobile application that can upload, process, and store into a database the following CSV filem which contains a list of products. An example CSV file is located in data.csv in this repo.
+Implement a full-stack web or mobile application that can upload, process, and store into a database the following CSV file which contains a list of products. An example CSV file is located in data.csv in this repo.
 
 ## Technology Choice
 1. Backend: Ruby on Rails, NestJS, .NET, or Python (choose the one you are being hired for)
@@ -22,7 +22,7 @@ Implement a full-stack web or mobile application that can upload, process, and s
 
 -----
 
-## Below my implematation
+## Below my 
 
 
 - [Installation and Configuration](#installation-and-configuration)
