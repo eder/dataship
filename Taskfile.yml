@@ -33,12 +33,6 @@ tasks:
     cmds:
       - cd backend && docker-compose down
 
-  frontend-dev:
-    desc: "Bring up the development environment:frontend"
-    cmds:
-      - cd frontend && npm run dev 
-
-
   test-backend-rspec:
     desc: "Run backend RSpec tests inside container with test environment"
     cmds:

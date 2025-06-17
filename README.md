@@ -1,4 +1,4 @@
-# Flatirons Full-Stack Developer Coding Test
+# Full-Stack Developer Coding Test
 ## Backend API - CSV Product Upload & Listing
 
 - [Installation and Configuration](#installation-and-configuration)
@@ -16,9 +16,6 @@
 - [Docker Compose](https://docs.docker.com/compose/)
 - (Optional) [Go Task](https://github.com/go-task/task) for orchestration
 
-
-1. *****Overview system design**
-![csv_upload drawio](https://github.com/user-attachments/assets/cc739c64-c10b-408c-bf14-eeb4764e61ee)
 ## Explanation
  - Client / Browser:
     - Users interact with the system via HTTP/.
@@ -205,20 +202,6 @@ TDD (RSpec) and BDD (Cucumber) tests allow you to quickly identify and fix regre
 
 - The necessary environment variables must be defined in a .env file in the project root.
 
-**Production Environment (Simulation)**
-- The production compose files are organized as follows:
-* ```backend/docker-compose.prod.yml``` for the backend (including Sidekiq, PostgreSQL and Redis).
-* ```docker-compose.prod.nginx.yml``` for the Nginx container, which acts as a reverse proxy.
-- The external network ``app_net`` is used to allow communication between containers.
-- Use the ``Taskfile.yml`` to orchestrate the production environment:
-```
-task prod-up
-```
-To tear down the environment:
-```
-task prod-down
-```
-
 ## Frontend - CSV Product Upload & Listing
 
 ## Description
@@ -369,16 +352,8 @@ This document describes how to configure monitoring with Datadog for Rails + Nod
 2. Datadog API Key
 3. Application ID for RUM (Real User Monitoring)
 
-## Backend Configuration (Rails)
 
-### 1. Install dependencies
-
-```bash
-cd backend
-bundle add ddtrace dogstatsd-ruby
-```
-
-### 2. Configure environment variables
+### Configure environment variables
 
 Create a `.env` file in the `backend/` directory:
 
@@ -393,22 +368,13 @@ DD_TRACE_AGENT_PORT=8126
 DD_STATSD_PORT=8125
 ```
 
-### 3. Initialize the application
+###  Initialize the application
 
 ```bash
 docker-compose up -d
 ```
 
-## Frontend Configuration (React/Node.js)
-
-### 1. Install dependencies
-
-```bash
-cd frontend
-npm install @datadog/browser-rum @datadog/browser-logs
-```
-
-### 2. Configure environment variables
+## Frontend Configuration (React/Node.js)  Configure environment variables
 
 Create a `.env` file in the `frontend/` directory:
 
@@ -505,9 +471,3 @@ npm run dev
 - [React Documentation](https://reactjs.org/)
 - [ActionCable Documentation](https://guides.rubyonrails.org/action_cable_overview.html)
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
-
-
-## Walk-through of my code and the experience you built.
-
-
-[video](https://share.vidyard.com/watch/naBKnXZoDv2kugwsE7Qo3n?)
