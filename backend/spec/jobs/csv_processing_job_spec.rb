@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'tempfile'
 
@@ -15,6 +17,14 @@ RSpec.describe CsvProcessingJob, type: :job do
     CSV
   end
 
+  let(:notification_service) { instance_double(NotificationService) }
+
+  before do
+    allow(ExchangeRateFetcher).to receive(:fetch_rates).and_return(exchange_rates)
+    allow(NotificationService).to receive(:new).and_return(notification_service)
+    allow(notification_service).to receive(:notify).and_return(true)
+  end
+
   it "processes a valid CSV and inserts products" do
     file = Tempfile.new(['test_products', '.csv'])
     file.write(csv_content)
@@ -23,6 +33,14 @@ RSpec.describe CsvProcessingJob, type: :job do
     expect {
       CsvProcessingJob.perform_now(file.path)
     }.to change { Product.count }.by(2)
+
+    expect(notification_service).to have_received(:notify).with(
+      "File processing finished successfully",
+      hash_including(
+        file: file.path,
+        status: "success"
+      )
+    )
 
     file.close
     file.unlink
@@ -41,6 +59,29 @@ RSpec.describe CsvProcessingJob, type: :job do
     expect {
       CsvProcessingJob.perform_now(file.path)
     }.to change { Product.count }.by(0)
+
+    expect(notification_service).to have_received(:notify).with(
+      "File processing finished successfully",
+      hash_including(
+        file: file.path,
+        status: "success"
+      )
+    )
+
+    file.close
+    file.unlink
+  end
+
+  it "allows custom notification adapter configuration" do
+    file = Tempfile.new(['test_products', '.csv'])
+    file.write(csv_content)
+    file.rewind
+
+    custom_config = { topic_arn: 'arn:aws:sns:us-east-1:123456789012:my-topic' }
+    
+    expect(NotificationService).to receive(:new).with('aws_sns', custom_config).and_return(notification_service)
+
+    CsvProcessingJob.perform_now(file.path, 'aws_sns', custom_config)
 
     file.close
     file.unlink

@@ -1,15 +1,17 @@
 x-common-env: &common-env
-  DATABASE_HOST: ${DATABASE_HOST}
-  DATABASE_USERNAME: ${DATABASE_USERNAME}
-  DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  DATABASE_NAME: ${DATABASE_NAME}
-  REDIS_URL: ${REDIS_URL}
-  EXCHANGE_API_DATE: ${EXCHANGE_API_DATE}
-  EXCHANGE_API_VERSION: ${EXCHANGE_API_VERSION}
-  EXCHANGE_CURRENCIES: ${EXCHANGE_CURRENCIES}
-  BASE_CURRENCY: ${BASE_CURRENCY}
-  CSV_MAX_LINES: ${CSV_MAX_LINES}
-  RAILS_MAX_THREADS: ${RAILS_MAX_THREADS}
+  DATABASE_HOST: ${DATABASE_HOST:-db}
+  DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres}
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD:-12345}
+  DATABASE_NAME: ${DATABASE_NAME:-api_development}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+  EXCHANGE_API_DATE: ${EXCHANGE_API_DATE:-latest}
+  EXCHANGE_API_VERSION: ${EXCHANGE_API_VERSION:-v1}
+  EXCHANGE_CURRENCIES: ${EXCHANGE_CURRENCIES:-usd,brl,rub,inr,cny,zar}
+  BASE_CURRENCY: ${BASE_CURRENCY:-USD}
+  CSV_MAX_LINES: ${CSV_MAX_LINES:-1000000}
+  RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+  DB_POOL_SIZE: ${DB_POOL_SIZE:-20}
+  CSV_BATCH_SIZE: ${CSV_BATCH_SIZE:-1000}
 
 services:
   nginx:
@@ -24,13 +26,18 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-12345}
+      POSTGRES_DB: ${DATABASE_NAME:-api_development}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "${DATABASE_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-api_development}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:6-alpine
@@ -45,8 +52,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment: *common-env
 
   sidekiq:
@@ -54,10 +63,19 @@ services:
     command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
       - .:/app
+      - ./tmp:/app/tmp
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment: *common-env
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
 
 volumes:
   db-data:

@@ -88,21 +88,12 @@ RSpec.describe CsvProcessor, type: :service do
     end
   end
 
-  describe '#parse_rows' do
-    it 'yields each CSV row with line numbers' do
-      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
-      rows = processor.send(:parse_rows).to_a
-      expect(rows.first[0]).to eq(1)
-      expect(rows.size).to eq(4)
-      expect(rows.first[1]['name']).to eq('Valid Product #(123456)')
-    end
-  end
-
   describe '#validate_row' do
     it 'returns sanitized data hash for valid row and logs nothing' do
       processor = CsvProcessor.new(temp_csv_path, exchange_rates)
-      line, row = processor.send(:parse_rows).first
-      result = processor.send(:validate_row, line, row)
+      # Create a valid row manually
+      valid_row = CSV.parse('Valid Product #(123456);$12.34;1/31/2023', headers: %w[name price expiration], col_sep: ';').first
+      result = processor.send(:validate_row, 1, valid_row)
       expect(result[:name]).to eq('Valid Product #(123456)')
       expect(result[:price]).to eq(12.34.to_d)
       expect(result[:expiration]).to eq(Date.strptime('1/31/2023', '%m/%d/%Y'))
@@ -125,13 +116,18 @@ RSpec.describe CsvProcessor, type: :service do
     end
   end
 
-  describe '#batch_insert' do
-    it 'inserts products when threshold is reached' do
+  describe '#insert_batch' do
+    it 'inserts products when batch is provided' do
       processor = CsvProcessor.new(temp_csv_path, exchange_rates)
-      products = Array.new(1000) { { name: 'A', price: 1.to_d, expiration: Date.today } }
+      products = Array.new(100) { { name: 'A', price: 1.to_d, expiration: Date.today } }
       expect(Product).to receive(:insert_all).with(products)
-      returned = processor.send(:batch_insert, products, 1000)
-      expect(returned).to eq([])
+      processor.send(:insert_batch, products, 100)
+    end
+
+    it 'does not insert when products array is empty' do
+      processor = CsvProcessor.new(temp_csv_path, exchange_rates)
+      expect(Product).not_to receive(:insert_all)
+      processor.send(:insert_batch, [], 100)
     end
   end
 end

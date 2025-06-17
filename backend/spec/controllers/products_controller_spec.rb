@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::ProductsController, type: :controller do
   describe 'GET #index' do
     before do
+      # Limpar produtos existentes antes de criar novos
+      Product.delete_all
+      
       create_list(:product, 20, exchange_rates: {
         "USD" => 1.0,
         "BRL" => 5.73,

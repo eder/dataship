@@ -7,6 +7,9 @@ require 'action_view'
 class CsvProcessor
   include ActionView::Helpers::SanitizeHelper
   
+  BATCH_SIZE = 1000
+  MAX_LINES = ENV.fetch("CSV_MAX_LINES", 1_000_000).to_i
+  
   def initialize(file_path, exchange_rates)
     @file_path = file_path
     @exchange_rates = exchange_rates
@@ -18,52 +21,62 @@ class CsvProcessor
   end
 
   def process
-    max_lines = ENV.fetch("CSV_MAX_LINES").to_i
-    valid_rows = 0
-    skipped_rows = 0
-    products = []
-    line_number = 0
-
-    parse_rows.each do |ln, row|
-      line_number = ln
-      break if line_number > max_lines
+    Rails.logger.info("Starting CSV processing for file: #{@file_path}")
+    
+    total_processed = 0
+    total_valid = 0
+    total_skipped = 0
+    current_batch = []
+    
+    # Process file in batches to avoid memory issues
+    CSV.foreach(@file_path, headers: true, col_sep: ';') do |row|
+      total_processed += 1
+      
+      # Check if we've reached the maximum lines limit
+      if total_processed > MAX_LINES
+        Rails.logger.warn("Reached maximum lines limit (#{MAX_LINES}). Stopping processing.")
+        break
+      end
+      
       begin
-        validated = validate_row(line_number, row)
+        validated = validate_row(total_processed, row)
         if validated
           sanitized = sanitize_row(validated)
-          products << sanitized.merge(
+          current_batch << sanitized.merge(
             exchange_rates: @exchange_rates,
             created_at: Time.current,
             updated_at: Time.current
           )
-          valid_rows += 1
-          products = batch_insert(products, line_number)
+          total_valid += 1
         else
-          skipped_rows += 1
+          total_skipped += 1
         end
+        
+        # Insert batch when it reaches the batch size
+        if current_batch.size >= BATCH_SIZE
+          insert_batch(current_batch, total_processed)
+          Rails.logger.info("Processed batch: #{total_processed} lines, #{total_valid} valid, #{total_skipped} skipped")
+          current_batch = []
+        end
+        
       rescue StandardError => row_error
-        log_failed_row(line_number, row, "Exception: #{row_error.message}")
-        Rails.logger.error("Error processing row ##{line_number}: #{row.inspect}. Error: #{row_error.message}")
-        skipped_rows += 1
+        log_failed_row(total_processed, row, "Exception: #{row_error.message}")
+        Rails.logger.error("Error processing row ##{total_processed}: #{row_error.message}")
+        total_skipped += 1
       end
     end
-
-    Product.insert_all(products) if products.any?
+    
+    # Insert remaining products in the last batch
+    if current_batch.any?
+      insert_batch(current_batch, total_processed)
+    end
+    
     Rails.logger.info(
-      "Processed #{line_number} lines: inserted #{valid_rows} products and skipped #{skipped_rows} rows from file #{@file_path}."
+      "Completed CSV processing: #{total_processed} lines processed, #{total_valid} products inserted, #{total_skipped} rows skipped from file #{@file_path}."
     )
   end
 
   private
-
-  def parse_rows
-    return enum_for(:parse_rows) unless block_given?
-    line_number = 0
-    CSV.foreach(@file_path, headers: true, col_sep: ';') do |row|
-      line_number += 1
-      yield line_number, row
-    end
-  end
 
   def validate_row(line_number, row)
     name = row['name']&.strip
@@ -100,12 +113,14 @@ class CsvProcessor
     { name: sanitized_name, price: data[:price], expiration: data[:expiration] }
   end
 
-  def batch_insert(products, line_number)
-    return products unless products.size >= 1000
-
-    Product.insert_all(products)
-    Rails.logger.info("Batch insert: inserted #{products.size} products (up to row #{line_number}).")
-    []
+  def insert_batch(products, line_number)
+    return if products.empty?
+    
+    ActiveRecord::Base.transaction do
+      Product.insert_all(products)
+    end
+    
+    Rails.logger.info("Batch insert completed: #{products.size} products inserted (up to line #{line_number})")
   end
 
   # Logs a failed row into the failed_rows CSV file with the line number, row data, and error message.
