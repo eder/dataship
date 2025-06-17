@@ -27,4 +27,3 @@ RSpec.describe ExchangeRateFetcher, type: :service do
     })
   end
 end
-
