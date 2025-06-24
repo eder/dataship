@@ -31,9 +31,3 @@ Then("after processing, when I request {string}") do |path|
   get path
   @json_response = JSON.parse(last_response.body)
 end
-
-# Then("the response meta information should indicate {string} as {int}") do |meta_key, expected_total|
-# p "#{Rails.env}"
-# expect(@json_response).to have_key("meta")
-# expect(@json_response["meta"][meta_key]).to eq(expected_total)
-# end
